@@ -2,12 +2,15 @@ package com.example.laba4
 
 import android.os.Bundle
 import android.widget.Toast
+import android.graphics.Color as AndroidColor
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +22,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 import com.example.laba4.screens.*
 import com.example.laba4.examples.*
@@ -28,6 +33,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = AndroidColor.TRANSPARENT
+        window.navigationBarColor = AndroidColor.TRANSPARENT
 
         setContent {
 
@@ -43,6 +51,14 @@ class MainActivity : ComponentActivity() {
                 lightColorScheme()
             }
 
+            val systemBars = remember {
+                WindowInsetsControllerCompat(window, window.decorView)
+            }
+            SideEffect {
+                systemBars.isAppearanceLightStatusBars = !darkTheme
+                systemBars.isAppearanceLightNavigationBars = !darkTheme
+            }
+
             MaterialTheme(
                 colorScheme = colorScheme
             ) {
@@ -52,18 +68,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .safeDrawingPadding()
+                    ) {
+                        AppNavigation(
+                            darkTheme = darkTheme,
 
-                    AppNavigation(
-                        darkTheme = darkTheme,
+                            onThemeChange = { enabled ->
+                                darkTheme = enabled
+                            },
 
-                        onThemeChange = { enabled ->
-                            darkTheme = enabled
-                        },
-
-                        onExit = {
-                            finish()
-                        }
-                    )
+                            onExit = {
+                                finish()
+                            }
+                        )
+                    }
                 }
             }
         }
